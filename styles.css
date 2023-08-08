@@ -1,0 +1,20 @@
+#board {
+    display: grid;
+    grid-template-columns: repeat(20, 20px);
+    grid-template-rows: repeat(20, 20px);
+    gap: 1px;
+    border: 1px solid #ccc;
+}
+
+.snake {
+    background-color: red;
+    height: 12px;
+    width: 12px;
+}
+
+.food {
+    background-color: blue;
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+}
