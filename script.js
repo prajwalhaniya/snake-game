@@ -50,8 +50,6 @@ class snakeGame {
             return;
         }
 
-        console.log('Game loop called');
-
         const head = { ...this.snake[0]};
 
         if (this.direction === 'up') head.y -= 1;
