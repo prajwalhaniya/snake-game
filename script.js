@@ -3,13 +3,13 @@ class snakeGame {
         this.boardSize = boardSize;
         this.gridSize = gridSize;
         this.updateInterval = updateInterval;
-        this.snake = [{ x: 2, y:2 }];
+        this.snake = [{ x: 2, y: 2 }];
         this.direction = 'down';
         this.board = document.getElementById('board');
         this.food = this.generateFood();
         this.gameover = false;
-        
-        document.addEventListener("keydown", event => {
+
+        document.addEventListener('keydown', (event) => {
             this.handleInput(event);
         });
 
@@ -17,10 +17,16 @@ class snakeGame {
     }
 
     handleInput(event) {
-        if (event.key === 'ArrowUp' && this.direction !== 'down') this.direction = 'up';
-        if (event.key === 'ArrowDown' && this.direction !== 'up') this.direction = 'down';
-        if (event.key === 'ArrowRight' && this.direction !== 'left') this.direction = 'right';
-        if (event.key === 'ArrowLeft' && this.direction !== 'right') this.direction = 'left';
+        if (!this.gameover) {
+            if (event.key === 'ArrowUp' && this.direction !== 'down')
+                this.direction = 'up';
+            if (event.key === 'ArrowDown' && this.direction !== 'up')
+                this.direction = 'down';
+            if (event.key === 'ArrowRight' && this.direction !== 'left')
+                this.direction = 'right';
+            if (event.key === 'ArrowLeft' && this.direction !== 'right')
+                this.direction = 'left';
+        }
     }
 
     generateFood() {
@@ -30,10 +36,7 @@ class snakeGame {
     }
 
     checkCollision(position) {
-        const posx = position.x;
-        const posy = position.y;
-        
-        if (posx < 1 || posx > this.boardSize || posy < 1 || posy > this.boardSize) {
+        if (position.x <= 0 || position.x >= 18 || position.y <= 0 || position.y >= 18) {
             this.gameover = true;
         }
 
@@ -50,7 +53,9 @@ class snakeGame {
             return;
         }
 
-        const head = { ...this.snake[0]};
+        const head = { ...this.snake[0] };
+
+        if (!this.gameover) {
 
         if (this.direction === 'up') head.y -= 1;
         if (this.direction === 'down') head.y += 1;
@@ -59,7 +64,7 @@ class snakeGame {
 
         this.checkCollision(head);
 
-        if (head.x === this.food.x && head.y === this.food.y)  {
+        if (head.x === this.food.x && head.y === this.food.y) {
             this.snake.unshift(head);
             this.food = this.generateFood();
         } else {
@@ -67,23 +72,24 @@ class snakeGame {
             this.snake.pop();
         }
 
-        this.board.innerHTML = "";
+        this.board.innerHTML = '';
 
-        this.snake.forEach(segment => {
-            const segmentElement = document.createElement("div");
+        this.snake.forEach((segment) => {
+            const segmentElement = document.createElement('div');
             segmentElement.style.gridRowStart = segment.y;
             segmentElement.style.gridColumnStart = segment.x;
-            segmentElement.classList.add("snake");
+            segmentElement.classList.add('snake');
             this.board.appendChild(segmentElement);
         });
 
-        const foodElement = document.createElement("div");
+        const foodElement = document.createElement('div');
         foodElement.style.gridRowStart = this.food.y;
         foodElement.style.gridColumnStart = this.food.x;
-        foodElement.classList.add("food");
+        foodElement.classList.add('food');
         this.board.appendChild(foodElement);
 
         setTimeout(this.gameLoop.bind(this), this.updateInterval);
+        }
     }
 
     startGame() {
@@ -91,5 +97,5 @@ class snakeGame {
     }
 }
 
-const game = new snakeGame(20, 20, 200);
+const game = new snakeGame(18, 18, 200);
 game.startGame();
