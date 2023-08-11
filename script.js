@@ -1,101 +1,101 @@
-class snakeGame {
-    constructor(boardSize, gridSize, updateInterval) {
-        this.boardSize = boardSize;
-        this.gridSize = gridSize;
-        this.updateInterval = updateInterval;
-        this.snake = [{ x: 2, y: 2 }];
-        this.direction = 'down';
-        this.board = document.getElementById('board');
-        this.food = this.generateFood();
-        this.gameover = false;
+const board = document.getElementById('board');
 
-        document.addEventListener('keydown', (event) => {
-            this.handleInput(event);
-        });
+let inputCoordinates = { x: 0, y: 0 };
+let snakesSpeed = 5;
+let renderTime = 0;
+let snake = [{ x: 13, y: 15}];
+let lastRenderTime = 0;
+const boardSize = 18;
 
-        this.gameLoop();
+let food = { x: 4, y:4 };
+
+const generateFood = () => {
+    const x = Math.floor(Math.random() * boardSize) + 1;
+    const y = Math.floor(Math.random() * boardSize) + 1;
+    return { x, y };
+}
+
+const renderView = (viewTime) => {
+    window.requestAnimationFrame(renderView);
+    if ((viewTime - lastRenderTime) / 1000 < 1 / snakesSpeed) {
+        return;
     }
+    lastRenderTime = viewTime;
+    gameLoop();
+}
 
-    handleInput(event) {
-        if (!this.gameover) {
-            if (event.key === 'ArrowUp' && this.direction !== 'down')
-                this.direction = 'up';
-            if (event.key === 'ArrowDown' && this.direction !== 'up')
-                this.direction = 'down';
-            if (event.key === 'ArrowRight' && this.direction !== 'left')
-                this.direction = 'right';
-            if (event.key === 'ArrowLeft' && this.direction !== 'right')
-                this.direction = 'left';
-        }
-    }
-
-    generateFood() {
-        const x = Math.floor(Math.random() * this.boardSize) + 1;
-        const y = Math.floor(Math.random() * this.boardSize) + 1;
-        return { x, y };
-    }
-
-    checkCollision(position) {
-        if (position.x <= 0 || position.x >= 18 || position.y <= 0 || position.y >= 18) {
-            this.gameover = true;
+const  checkCollision = (positions) => {
+    for (let i = 1; i < snake.length; i++) {
+        if (positions[i].x === positions[0].x && positions[i].y === positions[0].y) {
+            return true;
         }
 
-        for (const segment of this.snake) {
-            if (segment.x === position.x && segment.y === position.y) {
-                this.gameover = true;
-            }
-        }
-    }
-
-    gameLoop() {
-        if (this.gameOver) {
-            alert('Game Over');
-            return;
+        if (positions[i].x >= 18 || positions[0].x <=0 || positions[i].y >= 18 || positions[0].y <= 0) {
+            return true;
         }
 
-        const head = { ...this.snake[0] };
-
-        if (!this.gameover) {
-
-        if (this.direction === 'up') head.y -= 1;
-        if (this.direction === 'down') head.y += 1;
-        if (this.direction === 'left') head.x -= 1;
-        if (this.direction === 'right') head.x += 1;
-
-        this.checkCollision(head);
-
-        if (head.x === this.food.x && head.y === this.food.y) {
-            this.snake.unshift(head);
-            this.food = this.generateFood();
-        } else {
-            this.snake.unshift(head);
-            this.snake.pop();
-        }
-
-        this.board.innerHTML = '';
-
-        this.snake.forEach((segment) => {
-            const segmentElement = document.createElement('div');
-            segmentElement.style.gridRowStart = segment.y;
-            segmentElement.style.gridColumnStart = segment.x;
-            segmentElement.classList.add('snake');
-            this.board.appendChild(segmentElement);
-        });
-
-        const foodElement = document.createElement('div');
-        foodElement.style.gridRowStart = this.food.y;
-        foodElement.style.gridColumnStart = this.food.x;
-        foodElement.classList.add('food');
-        this.board.appendChild(foodElement);
-
-        setTimeout(this.gameLoop.bind(this), this.updateInterval);
-        }
-    }
-
-    startGame() {
-        this.gameLoop();
+        return false;
     }
 }
 
-const game = new snakeGame(18, 18, 200);
-game.startGame();
+const gameLoop = () => {
+    if (checkCollision(snake)) {
+        inputCoordinates = { x: 0, y: 0 };
+        alert('Game over');
+        snake = [{ x: 13, y:15 }];
+    }
+
+    if (snake[0].y === food.y && snake[0].x === food.x) {
+        snake.unshift({ x: snake[0].x + inputCoordinates.x, y: snake[0].y + inputCoordinates.y });
+        food = generateFood();
+    }
+
+    for (let i = snake.length - 2; i >= 0; i-- ) {
+        snake[i+1] = { ...snake[i]};
+    }
+
+    snake[0].x += inputCoordinates.x;
+    snake[0].y += inputCoordinates.y;
+    
+    board.innerHTML = "";
+
+    snake.forEach((e,i) => {
+        snakeElement = document.createElement('div');
+        snakeElement.style.gridRowStart = e.y;
+        snakeElement.style.gridColumnStart = e.x;
+        snakeElement.classList.add('snake');
+        board.appendChild(snakeElement);
+    });
+
+    foodElement = document.createElement('div');
+    foodElement.style.gridRowStart = food.y;
+    foodElement.style.gridColumnStart = food.x;
+    foodElement.classList.add('food');
+    board.appendChild(foodElement);
+}
+
+window.requestAnimationFrame(renderView);
+
+window.addEventListener('keydown', (e) => {
+    inputCoordinates = { x: 0, y: 1 };
+    switch(e.key) {
+        case 'ArrowUp':
+            inputCoordinates.x = 0;
+            inputCoordinates.y = -1;
+            break;
+        case 'ArrowDown':
+            inputCoordinates.x = 0;
+            inputCoordinates.y = 1;
+            break;
+        case 'ArrowLeft':
+            inputCoordinates.x = -1;
+            inputCoordinates.y = 0;
+            break;
+        case 'ArrowRight':
+            inputCoordinates.x = 1;
+            inputCoordinates.y = 0;
+            break;
+        default:
+            break;
+    }
+});
