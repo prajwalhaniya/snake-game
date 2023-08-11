@@ -1,7 +1,7 @@
 const board = document.getElementById('board');
 
 let inputCoordinates = { x: 0, y: 0 };
-let snakesSpeed = 5;
+let snakesSpeed = 10;
 let renderTime = 0;
 let snake = [{ x: 13, y: 15}];
 let lastRenderTime = 0;
@@ -30,7 +30,7 @@ const  checkCollision = (positions) => {
             return true;
         }
 
-        if (positions[i].x >= 18 || positions[0].x <=0 || positions[i].y >= 18 || positions[0].y <= 0) {
+        if (positions[i].x > 18 || positions[0].x <=0 || positions[i].y > 18 || positions[0].y <= 0) {
             return true;
         }
 
@@ -44,19 +44,20 @@ const gameLoop = () => {
         alert('Game over');
         snake = [{ x: 13, y:15 }];
     }
-
+    
     if (snake[0].y === food.y && snake[0].x === food.x) {
         snake.unshift({ x: snake[0].x + inputCoordinates.x, y: snake[0].y + inputCoordinates.y });
         food = generateFood();
     }
-
+    
     for (let i = snake.length - 2; i >= 0; i-- ) {
         snake[i+1] = { ...snake[i]};
     }
-
+    
     snake[0].x += inputCoordinates.x;
     snake[0].y += inputCoordinates.y;
     
+    console.log(snake);
     board.innerHTML = "";
 
     snake.forEach((e,i) => {
